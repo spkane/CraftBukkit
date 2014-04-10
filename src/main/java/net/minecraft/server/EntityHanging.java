@@ -10,6 +10,9 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.painting.PaintingBreakEvent;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public abstract class EntityHanging extends Entity {
 
     private int e;

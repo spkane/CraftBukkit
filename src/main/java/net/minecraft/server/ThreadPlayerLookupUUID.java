@@ -11,6 +11,9 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 class ThreadPlayerLookupUUID extends Thread {
 
     final LoginListener a;
@@ -70,10 +73,12 @@ class ThreadPlayerLookupUUID extends Thread {
                 LoginListener.e().error("Username \'" + LoginListener.d(this.a).getName() + "\' tried to join with an invalid session");
             }
         } catch (AuthenticationUnavailableException authenticationunavailableexception) {
+            NewRelic.noticeError(authenticationunavailableexception);
             this.a.disconnect("Authentication servers are down. Please try again later, sorry!");
             LoginListener.e().error("Couldn\'t verify username because servers are unavailable");
             // CraftBukkit start
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             this.a.disconnect("Failed to verify username!");
             LoginListener.b(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.d(this.a).getName(), exception);
             // CraftBukkit end

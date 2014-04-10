@@ -31,6 +31,9 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public final class VanillaCommandWrapper extends VanillaCommand {
     protected final CommandAbstract vanillaCommand;
 
@@ -59,10 +62,12 @@ public final class VanillaCommandWrapper extends VanillaCommand {
         try {
             vanillaCommand.b(icommandlistener, args);
         } catch (ExceptionUsage exceptionusage) {
+            NewRelic.noticeError(exceptionusage);
             ChatMessage chatmessage = new ChatMessage("commands.generic.usage", new Object[] {new ChatMessage(exceptionusage.getMessage(), exceptionusage.a())});
             chatmessage.b().setColor(EnumChatFormat.RED);
             icommandlistener.sendMessage(chatmessage);
         } catch (CommandException commandexception) {
+            NewRelic.noticeError(commandexception);
             ChatMessage chatmessage = new ChatMessage(commandexception.getMessage(), commandexception.a());
             chatmessage.b().setColor(EnumChatFormat.RED);
             icommandlistener.sendMessage(chatmessage);
@@ -109,6 +114,7 @@ public final class VanillaCommandWrapper extends VanillaCommand {
                             j++;
                             continue;
                         } catch (CommandException commandexception1) {
+                            NewRelic.noticeError(commandexception1);
                             ChatMessage chatmessage4 = new ChatMessage(commandexception1.getMessage(), commandexception1.a());
                             chatmessage4.b().setColor(EnumChatFormat.RED);
                             icommandlistener.sendMessage(chatmessage4);
@@ -127,14 +133,17 @@ public final class VanillaCommandWrapper extends VanillaCommand {
                 icommandlistener.sendMessage(chatmessage);
             }
         } catch (ExceptionUsage exceptionusage) {
+            NewRelic.noticeError(exceptionusage);
             ChatMessage chatmessage1 = new ChatMessage("commands.generic.usage", new Object[] { new ChatMessage(exceptionusage.getMessage(), exceptionusage.a()) });
             chatmessage1.b().setColor(EnumChatFormat.RED);
             icommandlistener.sendMessage(chatmessage1);
         } catch (CommandException commandexception) {
+            NewRelic.noticeError(commandexception);
             ChatMessage chatmessage2 = new ChatMessage(commandexception.getMessage(), commandexception.a());
             chatmessage2.b().setColor(EnumChatFormat.RED);
             icommandlistener.sendMessage(chatmessage2);
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             ChatMessage chatmessage3 = new ChatMessage("commands.generic.exception", new Object[0]);
             chatmessage3.b().setColor(EnumChatFormat.RED);
             icommandlistener.sendMessage(chatmessage3);

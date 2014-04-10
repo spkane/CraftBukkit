@@ -12,6 +12,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
 
 import net.minecraft.server.MinecraftServer;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class CraftCrashReport implements Callable<Object> {
 
     public Object call() throws Exception {
@@ -30,6 +33,7 @@ public class CraftCrashReport implements Callable<Object> {
             }
             value.append("}\n   ").append(Bukkit.getScheduler().toString());
         } catch (Throwable t) {
+            NewRelic.noticeError(t);
             value.append("\n   Failed to handle CraftCrashReport:\n");
             PrintWriter writer = new PrintWriter(value);
             t.printStackTrace(writer);

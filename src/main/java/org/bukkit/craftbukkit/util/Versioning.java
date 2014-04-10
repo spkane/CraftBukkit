@@ -7,6 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public final class Versioning {
     public static String getBukkitVersion() {
         String result = "Unknown-Version";
@@ -20,6 +23,7 @@ public final class Versioning {
 
                 result = properties.getProperty("version");
             } catch (IOException ex) {
+                NewRelic.noticeError(ex);
                 Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Bukkit version!", ex);
             }
         }

@@ -56,6 +56,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.StandardMessenger;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 @DelegateDeserialization(CraftOfflinePlayer.class)
 public class CraftPlayer extends CraftHumanEntity implements Player {
     private long firstPlayed = 0;
@@ -1042,6 +1045,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                     stream.write(channel.getBytes("UTF8"));
                     stream.write((byte) 0);
                 } catch (IOException ex) {
+                    NewRelic.noticeError(ex);
                     Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, "Could not send Plugin Channel REGISTER to " + getName(), ex);
                 }
             }

@@ -3,6 +3,9 @@ package net.minecraft.server;
 import java.util.Iterator;
 import java.util.List;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class VillageSiege {
 
     private World world;
@@ -142,6 +145,7 @@ public class VillageSiege {
                 entityzombie.a((GroupDataEntity) null);
                 entityzombie.setVillager(false);
             } catch (Exception exception) {
+                NewRelic.noticeError(exception);
                 exception.printStackTrace();
                 return false;
             }

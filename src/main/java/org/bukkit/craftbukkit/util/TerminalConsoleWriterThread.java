@@ -8,6 +8,9 @@ import jline.console.ConsoleReader;
 import net.minecraft.util.com.mojang.util.QueueLogAppender;
 import org.bukkit.craftbukkit.Main;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class TerminalConsoleWriterThread implements Runnable {
     final private ConsoleReader reader;
     final private OutputStream output;
@@ -37,6 +40,7 @@ public class TerminalConsoleWriterThread implements Runnable {
                     try {
                         reader.drawLine();
                     } catch (Throwable ex) {
+                        NewRelic.noticeError(ex);
                         reader.getCursorBuffer().clear();
                     }
                     reader.flush();
@@ -45,6 +49,7 @@ public class TerminalConsoleWriterThread implements Runnable {
                     output.flush();
                 }
             } catch (IOException ex) {
+                NewRelic.noticeError(ex);
                 Logger.getLogger(TerminalConsoleWriterThread.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

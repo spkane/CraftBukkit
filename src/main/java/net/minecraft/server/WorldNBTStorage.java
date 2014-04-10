@@ -18,6 +18,9 @@ import java.util.UUID;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class WorldNBTStorage implements IDataManager, IPlayerFileData {
 
     private static final Logger a = LogManager.getLogger();
@@ -53,6 +56,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
                 dataoutputstream.close();
             }
         } catch (IOException ioexception) {
+            NewRelic.noticeError(ioexception);
             ioexception.printStackTrace();
             throw new RuntimeException("Failed to check session lock, aborting");
         }
@@ -75,6 +79,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
                 datainputstream.close();
             }
         } catch (IOException ioexception) {
+            NewRelic.noticeError(ioexception);
             throw new ExceptionWorldConflict("Failed to check session lock, aborting");
         }
     }
@@ -94,6 +99,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
                 nbttagcompound1 = nbttagcompound.getCompound("Data");
                 return new WorldData(nbttagcompound1);
             } catch (Exception exception) {
+                NewRelic.noticeError(exception);
                 exception.printStackTrace();
             }
         }
@@ -105,6 +111,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
                 nbttagcompound1 = nbttagcompound.getCompound("Data");
                 return new WorldData(nbttagcompound1);
             } catch (Exception exception1) {
+                NewRelic.noticeError(exception1);
                 exception1.printStackTrace();
             }
         }
@@ -138,6 +145,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
                 file1.delete();
             }
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             exception.printStackTrace();
         }
     }
@@ -168,6 +176,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
                 file1.delete();
             }
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             exception.printStackTrace();
         }
     }
@@ -187,6 +196,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
 
             file1.renameTo(file2);
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             a.warn("Failed to save player data for " + entityhuman.getName());
         }
     }
@@ -215,6 +225,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
                 return NBTCompressedStreamTools.a((InputStream) (new FileInputStream(file1)));
             }
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             a.warn("Failed to load player data for " + s);
         }
 
@@ -257,6 +268,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
                 dis = new DataInputStream(new FileInputStream(file1));
                 return uuid = new UUID(dis.readLong(), dis.readLong());
             } catch (IOException ex) {
+                NewRelic.noticeError(ex);
                 a.warn("Failed to read " + file1 + ", generating new random UUID", ex);
             } finally {
                 if (dis != null) {
@@ -275,6 +287,7 @@ public class WorldNBTStorage implements IDataManager, IPlayerFileData {
             dos.writeLong(uuid.getMostSignificantBits());
             dos.writeLong(uuid.getLeastSignificantBits());
         } catch (IOException ex) {
+            NewRelic.noticeError(ex);
             a.warn("Failed to write " + file1, ex);
         } finally {
             if (dos != null) {

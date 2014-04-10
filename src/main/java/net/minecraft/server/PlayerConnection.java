@@ -58,6 +58,9 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.util.NumberConversions;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class PlayerConnection implements PacketPlayInListener {
 
     private static final Logger c = LogManager.getLogger();
@@ -736,6 +739,7 @@ public class PlayerConnection implements PacketPlayInListener {
         try {
             this.networkManager.handle(packet, new GenericFutureListener[0]);
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             CrashReport crashreport = CrashReport.a(throwable, "Sending packet");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Packet being sent");
 
@@ -795,8 +799,10 @@ public class PlayerConnection implements PacketPlayInListener {
                         try {
                             waitable.get();
                         } catch (InterruptedException e) {
+                            NewRelic.noticeError(e);
                             Thread.currentThread().interrupt();
                         } catch (ExecutionException e) {
+                            NewRelic.noticeError(e);
                             throw new RuntimeException(e);
                         }
                     } else {
@@ -850,8 +856,10 @@ public class PlayerConnection implements PacketPlayInListener {
                     try {
                         waitable.get();
                     } catch (InterruptedException e) {
+                        NewRelic.noticeError(e);
                         Thread.currentThread().interrupt();
                     } catch (ExecutionException e) {
+                        NewRelic.noticeError(e);
                         throw new RuntimeException(e);
                     }
                 } else {
@@ -911,8 +919,10 @@ public class PlayerConnection implements PacketPlayInListener {
                 try {
                     waitable.get();
                 } catch (InterruptedException e) {
+                    NewRelic.noticeError(e);
                     Thread.currentThread().interrupt(); // This is proper habit for java. If we aren't handling it, pass it on!
                 } catch (ExecutionException e) {
+                    NewRelic.noticeError(e);
                     throw new RuntimeException("Exception processing chat event", e.getCause());
                 }
             } else {
@@ -953,6 +963,7 @@ public class PlayerConnection implements PacketPlayInListener {
                 return;
             }
         } catch (org.bukkit.command.CommandException ex) {
+            NewRelic.noticeError(ex);
             player.sendMessage(org.bukkit.ChatColor.RED + "An internal error occurred while attempting to perform this command");
             java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             return;
@@ -1666,6 +1677,7 @@ public class PlayerConnection implements PacketPlayInListener {
                 }
                 // CraftBukkit start
             } catch (Throwable exception) {
+                NewRelic.noticeError(exception);
                 c.error("Couldn\'t handle book info", exception);
                 this.disconnect("Invalid book data!");
                 // CraftBukkit end
@@ -1683,6 +1695,7 @@ public class PlayerConnection implements PacketPlayInListener {
                 }
                 // CraftBukkit start
             } catch (Throwable exception1) {
+                NewRelic.noticeError(exception1);
                 c.error("Couldn\'t sign book", exception1);
                 this.disconnect("Invalid book data!");
                 // CraftBukkit end
@@ -1702,6 +1715,7 @@ public class PlayerConnection implements PacketPlayInListener {
                     }
                     // CraftBukkit start
                 } catch (Throwable exception2) {
+                    NewRelic.noticeError(exception2);
                     c.error("Couldn\'t select trade", exception2);
                     this.disconnect("Invalid trade data!");
                     // CraftBukkit end
@@ -1738,6 +1752,7 @@ public class PlayerConnection implements PacketPlayInListener {
                         }
                         // CraftBukkit start
                     } catch (Throwable exception3) {
+                        NewRelic.noticeError(exception3);
                         c.error("Couldn\'t set command block", exception3);
                         this.disconnect("Invalid CommandBlock data!");
                         // CraftBukkit end
@@ -1764,6 +1779,7 @@ public class PlayerConnection implements PacketPlayInListener {
                         }
                         // CraftBukkit start
                     } catch (Throwable exception4) {
+                        NewRelic.noticeError(exception4);
                         c.error("Couldn\'t set beacon", exception4);
                         this.disconnect("Invalid beacon data!");
                         // CraftBukkit end
@@ -1790,6 +1806,7 @@ public class PlayerConnection implements PacketPlayInListener {
                         getPlayer().addChannel(channel);
                     }
                 } catch (UnsupportedEncodingException ex) {
+                    NewRelic.noticeError(ex);
                     throw new AssertionError(ex);
                 }
             } else if (packetplayincustompayload.c().equals("UNREGISTER")) {
@@ -1799,6 +1816,7 @@ public class PlayerConnection implements PacketPlayInListener {
                         getPlayer().removeChannel(channel);
                     }
                 } catch (UnsupportedEncodingException ex) {
+                    NewRelic.noticeError(ex);
                     throw new AssertionError(ex);
                 }
             } else {

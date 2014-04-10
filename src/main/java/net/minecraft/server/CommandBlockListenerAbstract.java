@@ -10,6 +10,9 @@ import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
 import com.google.common.base.Joiner;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public abstract class CommandBlockListenerAbstract implements ICommandListener {
 
     private static final SimpleDateFormat a = new SimpleDateFormat("HH:mm:ss");
@@ -165,6 +168,7 @@ public abstract class CommandBlockListenerAbstract implements ICommandListener {
                         completed++;
                     }
                 } catch (Throwable exception) {
+                    NewRelic.noticeError(exception);
                     if(this instanceof TileEntityCommandListener) {
                         TileEntityCommandListener listener = (TileEntityCommandListener) this;
                         MinecraftServer.av().log(Level.WARN, String.format("CommandBlock at (%d,%d,%d) failed to handle command", listener.getChunkCoordinates().x, listener.getChunkCoordinates().y, listener.getChunkCoordinates().z), exception);

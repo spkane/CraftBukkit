@@ -9,6 +9,9 @@ import joptsimple.OptionException;
 import joptsimple.OptionSet;
 import net.minecraft.server.MinecraftServer;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class ShortConsoleLogFormatter extends Formatter {
     private final SimpleDateFormat date;
 
@@ -24,6 +27,7 @@ public class ShortConsoleLogFormatter extends Formatter {
                     date = (SimpleDateFormat) object;
                 }
             } catch (OptionException ex) {
+                NewRelic.noticeError(ex);
                 System.err.println("Given date format is not valid. Falling back to default.");
             }
         } else if (options.has("nojline")) {

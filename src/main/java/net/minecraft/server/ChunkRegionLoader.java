@@ -14,6 +14,9 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
 
     private static final Logger a = LogManager.getLogger();
@@ -131,6 +134,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
         try {
             world.F();
         } catch (ExceptionWorldConflict ex) {
+            NewRelic.noticeError(ex);
             ex.printStackTrace();
         }
         // CraftBukkit end
@@ -143,6 +147,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
             this.a(chunk, world, nbttagcompound1);
             this.a(chunk.l(), nbttagcompound);
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             exception.printStackTrace();
         }
     }
@@ -183,6 +188,7 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
             try {
                 this.a(pendingchunktosave);
             } catch (Exception exception) {
+                NewRelic.noticeError(exception);
                 exception.printStackTrace();
             }
         }

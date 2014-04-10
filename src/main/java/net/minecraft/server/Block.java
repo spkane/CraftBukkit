@@ -4,6 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class Block {
 
     public static final RegistryMaterials REGISTRY = new RegistryBlocks("air");
@@ -63,6 +66,7 @@ public class Block {
             try {
                 return (Block) REGISTRY.a(Integer.parseInt(s));
             } catch (NumberFormatException numberformatexception) {
+                NewRelic.noticeError(numberformatexception);
                 return null;
             }
         }

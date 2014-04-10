@@ -25,6 +25,9 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public abstract class World implements IBlockAccess {
 
     public boolean d;
@@ -83,6 +86,7 @@ public abstract class World implements IBlockAccess {
             try {
                 return chunk.a(i & 15, j & 15, this.worldProvider.e);
             } catch (Throwable throwable) {
+                NewRelic.noticeError(throwable);
                 CrashReport crashreport = CrashReport.a(throwable, "Getting biome");
                 CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Coordinates of biome request");
 
@@ -153,6 +157,7 @@ public abstract class World implements IBlockAccess {
             try {
                 this.a(worldsettings);
             } catch (Throwable throwable) {
+                NewRelic.noticeError(throwable);
                 CrashReport crashreport = CrashReport.a(throwable, "Exception initializing level");
 
                 try {
@@ -207,6 +212,7 @@ public abstract class World implements IBlockAccess {
                 chunk = this.getChunkAt(i >> 4, k >> 4);
                 return chunk.getType(i & 15, j, k & 15);
             } catch (Throwable throwable) {
+                NewRelic.noticeError(throwable);
                 CrashReport crashreport = CrashReport.a(throwable, "Exception getting block type in world");
                 CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Requested block coordinates");
 
@@ -485,6 +491,7 @@ public abstract class World implements IBlockAccess {
 
                 block1.doPhysics(this, i, j, k, block);
             } catch (Throwable throwable) {
+                NewRelic.noticeError(throwable);
                 CrashReport crashreport = CrashReport.a(throwable, "Exception while updating neighbours");
                 CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being updated");
 
@@ -493,6 +500,7 @@ public abstract class World implements IBlockAccess {
                 try {
                     l = this.getData(i, j, k);
                 } catch (Throwable throwable1) {
+                    NewRelic.noticeError(throwable1);
                     l = -1;
                 }
 
@@ -1153,6 +1161,7 @@ public abstract class World implements IBlockAccess {
                 ++entity.ticksLived;
                 entity.h();
             } catch (Throwable throwable) {
+                NewRelic.noticeError(throwable);
                 crashreport = CrashReport.a(throwable, "Ticking entity");
                 crashreportsystemdetails = crashreport.a("Entity being ticked");
                 if (entity == null) {
@@ -1216,6 +1225,7 @@ public abstract class World implements IBlockAccess {
                 try {
                     this.playerJoinedWorld(entity);
                 } catch (Throwable throwable1) {
+                    NewRelic.noticeError(throwable1);
                     crashreport = CrashReport.a(throwable1, "Ticking entity");
                     crashreportsystemdetails = crashreport.a("Entity being ticked");
                     entity.a(crashreportsystemdetails);
@@ -1256,6 +1266,7 @@ public abstract class World implements IBlockAccess {
                 try {
                     tileentity.h();
                 } catch (Throwable throwable2) {
+                    NewRelic.noticeError(throwable2);
                     crashreport = CrashReport.a(throwable2, "Ticking block entity");
                     crashreportsystemdetails = crashreport.a("Block entity being ticked");
                     tileentity.a(crashreportsystemdetails);
@@ -2668,6 +2679,7 @@ public abstract class World implements IBlockAccess {
                 ((IWorldAccess) this.u.get(j1)).a(entityhuman, i, j, k, l, i1);
             }
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             CrashReport crashreport = CrashReport.a(throwable, "Playing level event");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Level event being played");
 
@@ -2708,6 +2720,7 @@ public abstract class World implements IBlockAccess {
         try {
             this.worldData.a(crashreportsystemdetails);
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             crashreportsystemdetails.a("Level Data Unobtainable", throwable);
         }
 

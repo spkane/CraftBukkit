@@ -14,6 +14,9 @@ import org.apache.logging.log4j.Logger;
 
 import org.bukkit.Bukkit; // CraftBukkit
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class Chunk {
 
     private static final Logger t = LogManager.getLogger();
@@ -375,6 +378,7 @@ public class Chunk {
                 try {
                     block = chunksection.getTypeId(i, j & 15, k);
                 } catch (Throwable throwable) {
+                    NewRelic.noticeError(throwable);
                     CrashReport crashreport = CrashReport.a(throwable, "Getting block");
                     CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being got");
 

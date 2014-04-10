@@ -7,6 +7,9 @@ import java.net.InetAddress;
 import java.util.HashMap;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class HandshakeListener implements PacketHandshakingInListener {
 
     // CraftBukkit start
@@ -59,6 +62,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
                     }
                 }
             } catch (Throwable t) {
+                NewRelic.noticeError(t);
                 org.apache.logging.log4j.LogManager.getLogger().debug("Failed to check connection throttle", t);
             }
             // CraftBukkit end

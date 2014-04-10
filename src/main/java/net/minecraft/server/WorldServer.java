@@ -22,6 +22,9 @@ import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class WorldServer extends World implements org.bukkit.BlockChangeDelegate {
     // CraftBukkit end
 
@@ -531,6 +534,7 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
                         try {
                             block.a(this, nextticklistentry.a, nextticklistentry.b, nextticklistentry.c, this.random);
                         } catch (Throwable throwable) {
+                            NewRelic.noticeError(throwable);
                             CrashReport crashreport = CrashReport.a(throwable, "Exception while ticking a block");
                             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being ticked");
 
@@ -539,6 +543,7 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
                             try {
                                 k = this.getData(nextticklistentry.a, nextticklistentry.b, nextticklistentry.c);
                             } catch (Throwable throwable1) {
+                                NewRelic.noticeError(throwable1);
                                 k = -1;
                             }
 

@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 
 import static org.bukkit.craftbukkit.Main.*; // CraftBukkit
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 class ThreadCommandReader extends Thread {
 
     final DedicatedServer server;
@@ -39,6 +42,7 @@ class ThreadCommandReader extends Thread {
                 // CraftBukkit end
             }
         } catch (IOException ioexception) {
+            NewRelic.noticeError(ioexception);
             DedicatedServer.az().error("Exception handling console input", ioexception);
         }
     }

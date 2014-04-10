@@ -12,6 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 /**
  * HelpYamlReader is responsible for processing the contents of the help.yml file.
  */
@@ -37,9 +40,11 @@ public class HelpYamlReader {
                     helpYaml.save(helpYamlFile);
                 }
             } catch (IOException ex) {
+                NewRelic.noticeError(ex);
                 server.getLogger().log(Level.SEVERE, "Could not save " + helpYamlFile, ex);
             }
         } catch (Exception ex) {
+            NewRelic.noticeError(ex);
             server.getLogger().severe("Failed to load help.yml. Verify the yaml indentation is correct. Reverting to default help.yml.");
             helpYaml = defaultConfig;
         }

@@ -25,6 +25,9 @@ import org.fusesource.jansi.WindowsAnsiOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 /**
  * ANSI-supported {@link WindowsTerminal}.
  *

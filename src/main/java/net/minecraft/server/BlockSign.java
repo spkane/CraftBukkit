@@ -4,6 +4,9 @@ import java.util.Random;
 
 import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class BlockSign extends BlockContainer {
 
     private Class a;
@@ -71,6 +74,7 @@ public class BlockSign extends BlockContainer {
         try {
             return (TileEntity) this.a.newInstance();
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             throw new RuntimeException(exception);
         }
     }

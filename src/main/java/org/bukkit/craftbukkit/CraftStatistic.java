@@ -14,6 +14,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class CraftStatistic {
     private static final BiMap<String, org.bukkit.Statistic> statistics;
     private static final BiMap<String, org.bukkit.Achievement> achievements;
@@ -110,6 +113,7 @@ public class CraftStatistic {
                 return StatisticList.F[material.getId()];
             }
         } catch (ArrayIndexOutOfBoundsException e) {
+            NewRelic.noticeError(e);
             return null;
         }
         return null;
@@ -135,6 +139,7 @@ public class CraftStatistic {
         try {
             id = Integer.valueOf(statisticString.substring(statisticString.lastIndexOf(".") + 1));
         } catch (NumberFormatException e) {
+            NewRelic.noticeError(e);
             return null;
         }
         return Material.getMaterial(id);

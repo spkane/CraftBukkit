@@ -9,6 +9,9 @@ import org.apache.logging.log4j.Logger;
 
 import org.bukkit.inventory.InventoryHolder; // CraftBukkit
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class TileEntity {
 
     private static final Logger a = LogManager.getLogger();
@@ -76,6 +79,7 @@ public class TileEntity {
                 tileentity = (TileEntity) oclass.newInstance();
             }
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             exception.printStackTrace();
         }
 

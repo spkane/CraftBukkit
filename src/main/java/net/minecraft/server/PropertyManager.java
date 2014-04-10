@@ -10,6 +10,9 @@ import org.apache.logging.log4j.Logger;
 
 import joptsimple.OptionSet; // CraftBukkit
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class PropertyManager {
 
     private static final Logger loggingAgent = LogManager.getLogger();
@@ -25,6 +28,7 @@ public class PropertyManager {
                 fileinputstream = new FileInputStream(file1);
                 this.properties.load(fileinputstream);
             } catch (Exception exception) {
+                NewRelic.noticeError(exception);
                 loggingAgent.warn("Failed to load " + file1, exception);
                 this.a();
             } finally {
@@ -77,6 +81,7 @@ public class PropertyManager {
             fileoutputstream = new FileOutputStream(this.c);
             this.properties.store(fileoutputstream, "Minecraft server properties");
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             loggingAgent.warn("Failed to save " + this.c, exception);
             this.a();
         } finally {
@@ -108,6 +113,7 @@ public class PropertyManager {
         try {
             return this.getOverride(s, Integer.parseInt(this.getString(s, "" + i))); // CraftBukkit
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             this.properties.setProperty(s, "" + i);
             this.savePropertiesFile();
             return this.getOverride(s, i); // CraftBukkit
@@ -118,6 +124,7 @@ public class PropertyManager {
         try {
             return this.getOverride(s, Boolean.parseBoolean(this.getString(s, "" + flag))); // CraftBukkit
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             this.properties.setProperty(s, "" + flag);
             this.savePropertiesFile();
             return this.getOverride(s, flag); // CraftBukkit

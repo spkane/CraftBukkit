@@ -15,6 +15,9 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public final class CraftMapView implements MapView {
 
     private final Map<CraftPlayer, RenderData> renderCache = new HashMap<CraftPlayer, RenderData>();
@@ -34,6 +37,7 @@ public final class CraftMapView implements MapView {
                 return Short.parseShort(text.substring("map_".length()));
             }
             catch (NumberFormatException ex) {
+                NewRelic.noticeError(ex);
                 throw new IllegalStateException("Map has non-numeric ID");
             }
         } else {

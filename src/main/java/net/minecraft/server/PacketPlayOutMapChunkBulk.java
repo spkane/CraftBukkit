@@ -6,6 +6,9 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class PacketPlayOutMapChunkBulk extends Packet {
 
     private int[] a;
@@ -117,6 +120,7 @@ public class PacketPlayOutMapChunkBulk extends Packet {
         try {
             inflater.inflate(abyte);
         } catch (DataFormatException dataformatexception) {
+            NewRelic.noticeError(dataformatexception);
             throw new IOException("Bad compressed data format");
         } finally {
             inflater.end();

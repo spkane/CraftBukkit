@@ -8,6 +8,8 @@ import org.apache.commons.lang.UnhandledException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitWorker;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
 
 class CraftAsyncTask extends CraftTask {
 
@@ -52,6 +54,7 @@ class CraftAsyncTask extends CraftTask {
         try {
             super.run();
         } catch (final Throwable t) {
+            NewRelic.noticeError(t);
             thrown = t;
             throw new UnhandledException(
                     String.format(

@@ -16,6 +16,9 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 /**
  * Provides access to terminal line settings via <tt>stty</tt>.
  *
@@ -92,6 +95,7 @@ public final class TerminalLineSettings
                 config = get("-a");
             }
         } catch (Exception e) {
+            NewRelic.noticeError(e);
             Log.debug("Failed to query stty ", name, "\n", e);
         }
 

@@ -2,6 +2,8 @@ package org.bukkit.craftbukkit.util;
 
 import java.util.concurrent.ExecutionException;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
 
 public abstract class Waitable<T> implements Runnable {
     private enum Status {
@@ -23,6 +25,7 @@ public abstract class Waitable<T> implements Runnable {
         try {
             value = evaluate();
         } catch (Throwable t) {
+            NewRelic.noticeError(t);
             this.t = t;
         } finally {
             synchronized (this) {

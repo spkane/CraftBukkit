@@ -74,6 +74,9 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.meta.BookMeta;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class CraftEventFactory {
     public static final DamageSource MELTING = CraftDamageSource.copyOf(DamageSource.BURN);
     public static final DamageSource POISON = CraftDamageSource.copyOf(DamageSource.MAGIC);
@@ -102,7 +105,10 @@ public class CraftEventFactory {
     /**
      * Block place methods
      */
+    @Trace (dispatcher=true)
     public static BlockPlaceEvent callBlockPlaceEvent(World world, EntityHuman who, BlockState replacedBlockState, int clickedX, int clickedY, int clickedZ) {
+        NewRelic.setTransactionName(null, "callBlockPlaceEvent");
+
         CraftWorld craftWorld = world.getWorld();
         CraftServer craftServer = world.getServer();
 
@@ -110,6 +116,11 @@ public class CraftEventFactory {
 
         Block blockClicked = craftWorld.getBlockAt(clickedX, clickedY, clickedZ);
         Block placedBlock = replacedBlockState.getBlock();
+
+        NewRelic.addCustomParameter("playerName", player.getName());
+        String blockname = placedBlock.getType().toString();
+        blockname = blockname.toLowerCase().replace("_"," ");
+        NewRelic.addCustomParameter("blockType", blockname);
 
         boolean canBuild = canBuild(craftWorld, player, placedBlock.getX(), placedBlock.getZ());
 
@@ -218,7 +229,10 @@ public class CraftEventFactory {
     /**
      * BlockDamageEvent
      */
+    @Trace (dispatcher=true)
     public static BlockDamageEvent callBlockDamageEvent(EntityHuman who, int x, int y, int z, ItemStack itemstack, boolean instaBreak) {
+        NewRelic.setTransactionName(null, "callBlockDamageEvent");
+
         Player player = (who == null) ? null : (Player) who.getBukkitEntity();
         CraftItemStack itemInHand = CraftItemStack.asCraftMirror(itemstack);
 
@@ -226,6 +240,11 @@ public class CraftEventFactory {
         CraftServer craftServer = (CraftServer) player.getServer();
 
         Block blockClicked = craftWorld.getBlockAt(x, y, z);
+
+        NewRelic.addCustomParameter("playerName", who.getName());
+        String blockname = blockClicked.getType().toString();
+        blockname = blockname.toLowerCase().replace("_"," ");
+        NewRelic.addCustomParameter("blockType", blockname);
 
         BlockDamageEvent event = new BlockDamageEvent(player, blockClicked, itemInHand, instaBreak);
         craftServer.getPluginManager().callEvent(event);
@@ -236,9 +255,16 @@ public class CraftEventFactory {
     /**
      * CreatureSpawnEvent
      */
+    @Trace (dispatcher=true)
     public static CreatureSpawnEvent callCreatureSpawnEvent(EntityLiving entityliving, SpawnReason spawnReason) {
+        NewRelic.setTransactionName(null, "callCreatureSpawnEvent");
+
         LivingEntity entity = (LivingEntity) entityliving.getBukkitEntity();
         CraftServer craftServer = (CraftServer) entity.getServer();
+
+        String entityname = entity.getType().toString();
+        entityname = entityname.toLowerCase().replace("_"," ");
+        NewRelic.addCustomParameter("entityType", entityname);
 
         CreatureSpawnEvent event = new CreatureSpawnEvent(entity, spawnReason);
         craftServer.getPluginManager().callEvent(event);
@@ -342,7 +368,10 @@ public class CraftEventFactory {
         return event;
     }
 
+    @Trace (dispatcher=true)
     public static PlayerDeathEvent callPlayerDeathEvent(EntityPlayer victim, List<org.bukkit.inventory.ItemStack> drops, String deathMessage) {
+        NewRelic.setTransactionName(null, "callPlayerDeathEvent");
+
         CraftPlayer entity = victim.getBukkitEntity();
         PlayerDeathEvent event = new PlayerDeathEvent(entity, drops, victim.getExpReward(), 0, deathMessage);
         org.bukkit.World world = entity.getWorld();
@@ -353,6 +382,9 @@ public class CraftEventFactory {
         victim.newTotalExp = event.getNewTotalExp();
         victim.expToDrop = event.getDroppedExp();
         victim.newExp = event.getNewExp();
+
+        NewRelic.addCustomParameter("playerName", victim.getName());
+        NewRelic.addCustomParameter("deathMessage", deathMessage);
 
         for (org.bukkit.inventory.ItemStack stack : event.getDrops()) {
             if (stack == null || stack.getType() == Material.AIR) continue;

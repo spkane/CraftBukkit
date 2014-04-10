@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.RandomAccess;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 // implementation of an ArrayList that offers a getter without range checks
 @SuppressWarnings("unchecked")
 public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAccess, Cloneable, Serializable {
@@ -270,6 +273,7 @@ public class UnsafeList<E> extends AbstractList<E> implements List<E>, RandomAcc
                 lastRet = -1;
                 expectedModCount = modCount;
             } catch (IndexOutOfBoundsException ex) {
+                NewRelic.noticeError(ex);
                 throw new ConcurrentModificationException();
             }
         }

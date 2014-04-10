@@ -21,6 +21,9 @@ import org.bukkit.craftbukkit.util.LongObjectHashMap;
 import org.bukkit.event.world.ChunkUnloadEvent;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class ChunkProviderServer implements IChunkProvider {
 
     private static final Logger b = LogManager.getLogger();
@@ -132,6 +135,7 @@ public class ChunkProviderServer implements IChunkProvider {
                     try {
                         chunk = this.chunkProvider.getOrCreateChunk(i, j);
                     } catch (Throwable throwable) {
+                        NewRelic.noticeError(throwable);
                         CrashReport crashreport = CrashReport.a(throwable, "Exception generating new chunk");
                         CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Chunk to be generated");
 
@@ -197,6 +201,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
                 return chunk;
             } catch (Exception exception) {
+                NewRelic.noticeError(exception);
                 b.error("Couldn\'t load chunk", exception);
                 return null;
             }
@@ -208,6 +213,7 @@ public class ChunkProviderServer implements IChunkProvider {
             try {
                 this.f.b(this.world, chunk);
             } catch (Exception exception) {
+                NewRelic.noticeError(exception);
                 b.error("Couldn\'t save entities", exception);
             }
         }
@@ -220,6 +226,7 @@ public class ChunkProviderServer implements IChunkProvider {
                 this.f.a(this.world, chunk);
                 // CraftBukkit start - IOException to Exception
             } catch (Exception ioexception) {
+                NewRelic.noticeError(ioexception);
                 b.error("Couldn\'t save chunk", ioexception);
                 /* Remove extra exception
             } catch (ExceptionWorldConflict exceptionworldconflict) {

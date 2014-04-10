@@ -1,5 +1,8 @@
 package net.minecraft.server;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 // CraftBukkit - import package private class
 class ClientCommandOrdinalWrapper {
 

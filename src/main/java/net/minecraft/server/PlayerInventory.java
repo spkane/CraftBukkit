@@ -9,6 +9,9 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class PlayerInventory implements IInventory {
 
     public ItemStack[] items = new ItemStack[36];
@@ -261,6 +264,7 @@ public class PlayerInventory implements IInventory {
                     }
                 }
             } catch (Throwable throwable) {
+                NewRelic.noticeError(throwable);
                 CrashReport crashreport = CrashReport.a(throwable, "Adding item to inventory");
                 CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Item being added");
 

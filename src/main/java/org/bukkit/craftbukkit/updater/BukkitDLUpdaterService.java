@@ -15,6 +15,12 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class BukkitDLUpdaterService {
     private static final String API_PREFIX_ARTIFACT = "/api/1.0/downloads/projects/craftbukkit/view/";
     private static final String API_PREFIX_CHANNEL = "/api/1.0/downloads/channels/";
@@ -29,8 +35,10 @@ public class BukkitDLUpdaterService {
         try {
             return fetchArtifact(slug);
         } catch (UnsupportedEncodingException ex) {
+            NewRelic.noticeError(ex);
             Bukkit.getLogger().log(Level.WARNING, "Could not get " + name + ": " + ex.getClass().getSimpleName());
         } catch (IOException ex) {
+            NewRelic.noticeError(ex);
             Bukkit.getLogger().log(Level.WARNING, "Could not get " + name + ": " + ex.getClass().getSimpleName());
         }
 
@@ -62,8 +70,10 @@ public class BukkitDLUpdaterService {
         try {
             return fetchChannel(slug);
         } catch (UnsupportedEncodingException ex) {
+            NewRelic.noticeError(ex);
             Bukkit.getLogger().log(Level.WARNING, "Could not get " + name + ": " + ex.getClass().getSimpleName());
         } catch (IOException ex) {
+            NewRelic.noticeError(ex);
             Bukkit.getLogger().log(Level.WARNING, "Could not get " + name + ": " + ex.getClass().getSimpleName());
         }
 
@@ -95,6 +105,7 @@ public class BukkitDLUpdaterService {
             try {
                 return format.parse(je.getAsString());
             } catch (ParseException ex) {
+                NewRelic.noticeError(ex);
                 throw new JsonParseException("Date is not formatted correctly", ex);
             }
         }

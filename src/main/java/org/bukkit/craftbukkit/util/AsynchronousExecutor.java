@@ -14,6 +14,9 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import org.apache.commons.lang.Validate;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 /**
  * Executes tasks using a multi-stage process executor. Synchronous executions are via {@link AsynchronousExecutor#finishActive()} or the {@link AsynchronousExecutor#get(Object)} methods.
  * <li \> Stage 1 creates the object from a parameter, and is usually called asynchronously.
@@ -131,6 +134,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
                             try {
                                 this.wait();
                             } catch (InterruptedException e) {
+                                NewRelic.noticeError(e);
                                 Thread.currentThread().interrupt();
                                 throw new RuntimeException("Unable to handle interruption on " + parameter, e);
                             }
@@ -149,6 +153,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
             try {
                 object = provider.callStage1(parameter);
             } catch (final Throwable t) {
+                NewRelic.noticeError(t);
                 this.t = (E) t;
             }
         }

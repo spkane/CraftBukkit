@@ -9,6 +9,12 @@ import org.bukkit.craftbukkit.util.Waitable;
 
 import jline.console.completer.Completer;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class ConsoleCommandCompleter implements Completer {
     private final CraftServer server;
 
@@ -38,8 +44,10 @@ public class ConsoleCommandCompleter implements Completer {
                 return cursor - (buffer.length() - lastSpace - 1);
             }
         } catch (ExecutionException e) {
+            NewRelic.noticeError(e);
             this.server.getLogger().log(Level.WARNING, "Unhandled exception when tab completing", e);
         } catch (InterruptedException e) {
+            NewRelic.noticeError(e);
             Thread.currentThread().interrupt();
         }
         return cursor;

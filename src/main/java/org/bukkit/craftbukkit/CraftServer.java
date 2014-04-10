@@ -187,6 +187,9 @@ import com.google.common.collect.MapMaker;
 
 import jline.console.ConsoleReader;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public final class CraftServer implements Server {
     private final String serverName = "CraftBukkit";
     private final String serverVersion;
@@ -329,6 +332,7 @@ public final class CraftServer implements Server {
         try {
             configuration.save(getConfigFile());
         } catch (IOException ex) {
+            NewRelic.noticeError(ex);
             Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + getConfigFile(), ex);
         }
     }
@@ -337,6 +341,7 @@ public final class CraftServer implements Server {
         try {
             commandsConfiguration.save(getCommandsConfigFile());
         } catch (IOException ex) {
+            NewRelic.noticeError(ex);
             Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + getCommandsConfigFile(), ex);
         }
     }
@@ -354,6 +359,7 @@ public final class CraftServer implements Server {
                     plugin.getLogger().info(message);
                     plugin.onLoad();
                 } catch (Throwable ex) {
+                    NewRelic.noticeError(ex);
                     Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
                 }
             }
@@ -444,10 +450,12 @@ public final class CraftServer implements Server {
                 try {
                     pluginManager.addPermission(perm);
                 } catch (IllegalArgumentException ex) {
+                    NewRelic.noticeError(ex);
                     getLogger().log(Level.WARNING, "Plugin " + plugin.getDescription().getFullName() + " tried to register permission '" + perm.getName() + "' but it's already registered", ex);
                 }
             }
         } catch (Throwable ex) {
+            NewRelic.noticeError(ex);
             Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " loading " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
         }
     }
@@ -669,6 +677,7 @@ public final class CraftServer implements Server {
             this.playerCommandState = true;
             return dispatchCommand(sender, serverCommand.command);
         } catch (Exception ex) {
+            NewRelic.noticeError(ex);
             getLogger().log(Level.WARNING, "Unexpected exception while parsing console command \"" + serverCommand.command + '"', ex);
             return false;
         } finally {
@@ -781,6 +790,7 @@ public final class CraftServer implements Server {
                 icon = loadServerIcon0(file);
             }
         } catch (Exception ex) {
+            NewRelic.noticeError(ex);
             getLogger().log(Level.WARNING, "Couldn't load server icon", ex);
         }
     }
@@ -793,6 +803,7 @@ public final class CraftServer implements Server {
         try {
             stream = new FileInputStream(file);
         } catch (FileNotFoundException ex) {
+            NewRelic.noticeError(ex);
             try {
                 file.createNewFile();
             } finally {
@@ -805,9 +816,11 @@ public final class CraftServer implements Server {
         try {
             perms = (Map<String, Map<String, Object>>) yaml.load(stream);
         } catch (MarkedYAMLException ex) {
+            NewRelic.noticeError(ex);
             getLogger().log(Level.WARNING, "Server permissions file " + file + " is not valid YAML: " + ex.toString());
             return;
         } catch (Throwable ex) {
+            NewRelic.noticeError(ex);
             getLogger().log(Level.WARNING, "Server permissions file " + file + " is not valid YAML.", ex);
             return;
         } finally {
@@ -827,6 +840,7 @@ public final class CraftServer implements Server {
             try {
                 pluginManager.addPermission(perm);
             } catch (IllegalArgumentException ex) {
+                NewRelic.noticeError(ex);
                 getLogger().log(Level.SEVERE, "Permission in " + file + " was already defined", ex);
             }
         }
@@ -980,6 +994,7 @@ public final class CraftServer implements Server {
                 WorldSaveEvent event = new WorldSaveEvent(handle.getWorld());
                 getPluginManager().callEvent(event);
             } catch (ExceptionWorldConflict ex) {
+                NewRelic.noticeError(ex);
                 getLogger().log(Level.SEVERE, null, ex);
             }
         }
@@ -1198,6 +1213,7 @@ public final class CraftServer implements Server {
                                 getLogger().severe("Could not set generator for default world '" + world + "': Plugin '" + plugin.getDescription().getFullName() + "' lacks a default world generator");
                             }
                         } catch (Throwable t) {
+                            NewRelic.noticeError(t);
                             plugin.getLogger().log(Level.SEVERE, "Could not set generator for default world '" + world + "': Plugin '" + plugin.getDescription().getFullName(), t);
                         }
                     }
@@ -1526,6 +1542,7 @@ public final class CraftServer implements Server {
         try {
             completions = getCommandMap().tabComplete(player, message.substring(1));
         } catch (CommandException ex) {
+            NewRelic.noticeError(ex);
             player.sendMessage(ChatColor.RED + "An internal error occurred while attempting to tab-complete this command");
             getLogger().log(Level.SEVERE, "Exception when " + player.getName() + " attempted to tab complete " + message, ex);
         }

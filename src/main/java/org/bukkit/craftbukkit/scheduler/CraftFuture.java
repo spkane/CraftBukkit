@@ -9,6 +9,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.bukkit.plugin.Plugin;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 class CraftFuture<T> extends CraftTask implements Future<T> {
 
     private final Callable<T> callable;
@@ -41,6 +44,7 @@ class CraftFuture<T> extends CraftTask implements Future<T> {
         try {
             return get(0, TimeUnit.MILLISECONDS);
         } catch (final TimeoutException e) {
+            NewRelic.noticeError(e);
             throw new Error(e);
         }
     }
@@ -88,6 +92,7 @@ class CraftFuture<T> extends CraftTask implements Future<T> {
         try {
             value = callable.call();
         } catch (final Exception e) {
+            NewRelic.noticeError(e);
             exception = e;
         } finally {
             synchronized (this) {

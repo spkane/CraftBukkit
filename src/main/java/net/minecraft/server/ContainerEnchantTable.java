@@ -14,6 +14,9 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.entity.Player;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class ContainerEnchantTable extends Container {
 
     // CraftBukkit - make type specific (changed from IInventory)

@@ -29,6 +29,9 @@ import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.plugin.PluginManager;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public abstract class Entity {
 
     // CraftBukkit start
@@ -413,6 +416,7 @@ public abstract class Entity {
         try {
             this.I();
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             CrashReport crashreport = CrashReport.a(throwable, "Checking entity block collision");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity being checked for collision");
 
@@ -755,6 +759,7 @@ public abstract class Entity {
                         try {
                             block.a(this.world, k1, l1, i2, this);
                         } catch (Throwable throwable) {
+                            NewRelic.noticeError(throwable);
                             CrashReport crashreport = CrashReport.a(throwable, "Colliding entity with block");
                             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being collided with");
 
@@ -1125,6 +1130,7 @@ public abstract class Entity {
                 }
             }
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             CrashReport crashreport = CrashReport.a(throwable, "Saving entity NBT");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity being saved");
 
@@ -1231,6 +1237,7 @@ public abstract class Entity {
             }
             // CraftBukkit end
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             CrashReport crashreport = CrashReport.a(throwable, "Loading entity NBT");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity being loaded");
 

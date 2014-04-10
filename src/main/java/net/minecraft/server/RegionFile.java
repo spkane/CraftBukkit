@@ -12,6 +12,9 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class RegionFile {
 
     private static final byte[] a = new byte[4096];
@@ -83,6 +86,7 @@ public class RegionFile {
                 this.e[j] = k;
             }
         } catch (IOException ioexception) {
+            NewRelic.noticeError(ioexception);
             ioexception.printStackTrace();
         }
     }
@@ -118,6 +122,7 @@ public class RegionFile {
                     }
                 }
             } catch (IOException ioexception) {
+                NewRelic.noticeError(ioexception);
                 return false;
             }
         }
@@ -168,6 +173,7 @@ public class RegionFile {
                     }
                 }
             } catch (IOException ioexception) {
+                NewRelic.noticeError(ioexception);
                 return null;
             }
         }
@@ -246,6 +252,7 @@ public class RegionFile {
 
             this.b(i, j, (int) (MinecraftServer.ap() / 1000L));
         } catch (IOException ioexception) {
+            NewRelic.noticeError(ioexception);
             ioexception.printStackTrace();
         }
     }

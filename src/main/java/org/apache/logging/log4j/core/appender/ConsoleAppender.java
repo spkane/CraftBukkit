@@ -35,6 +35,9 @@ import org.apache.logging.log4j.core.helpers.Loader;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.util.PropertiesUtil;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 /**
  * ConsoleAppender appends log events to <code>System.out</code> or
  * <code>System.err</code> using a layout specified by the user. The
@@ -113,6 +116,7 @@ public final class ConsoleAppender extends AbstractOutputStreamAppender {
                     follow ? new PrintStream(new SystemOutStream(), true, enc) : System.out :
                     follow ? new PrintStream(new SystemErrStream(), true, enc) : System.err;
         } catch (final UnsupportedEncodingException ex) { // should never happen
+            NewRelic.noticeError(ex);
             throw new IllegalStateException("Unsupported default encoding " + enc, ex);
         }
         final PropertiesUtil propsUtil = PropertiesUtil.getProperties();
@@ -127,10 +131,13 @@ public final class ConsoleAppender extends AbstractOutputStreamAppender {
             final Constructor<?> constructor = clazz.getConstructor(OutputStream.class);
             return (OutputStream) constructor.newInstance(printStream);
         } catch (final ClassNotFoundException cnfe) {
+            NewRelic.noticeError(cnfe);
             LOGGER.debug("Jansi is not installed, cannot find {}", JANSI_CLASS);
         } catch (final NoSuchMethodException nsme) {
+            NewRelic.noticeError(nsme);
             LOGGER.warn("{} is missing the proper constructor", JANSI_CLASS);
         } catch (final Throwable ex) { // CraftBukkit - Exception -> Throwable
+            NewRelic.noticeError(ex);
             LOGGER.warn("Unable to instantiate {}", JANSI_CLASS);
         }
         return printStream;

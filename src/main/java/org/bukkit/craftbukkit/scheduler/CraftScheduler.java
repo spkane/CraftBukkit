@@ -21,6 +21,9 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 /**
  * The fundamental concepts for this implementation:
  * <li>Main thread owns {@link #head} and {@link #currentTick}, but it may be read from any thread</li>
@@ -344,6 +347,7 @@ public class CraftScheduler implements BukkitScheduler {
                 try {
                     task.run();
                 } catch (final Throwable throwable) {
+                    NewRelic.noticeError(throwable);
                     task.getOwner().getLogger().log(
                             Level.WARNING,
                             String.format(

@@ -27,6 +27,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class EntityPlayer extends EntityHuman implements ICrafting {
 
     private static final Logger bM = LogManager.getLogger();
@@ -291,6 +294,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
             }
             // CraftBukkit end
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             CrashReport crashreport = CrashReport.a(throwable, "Ticking player");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Player being ticked");
 
@@ -724,6 +728,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
                 merchantrecipelist.a(packetdataserializer);
                 this.playerConnection.sendPacket(new PacketPlayOutCustomPayload("MC|TrList", packetdataserializer));
             } catch (Exception ioexception) { // CraftBukkit - IOException -> Exception
+                NewRelic.noticeError(ioexception);
                 bM.error("Couldn\'t send trade list", ioexception);
             }
         }

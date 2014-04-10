@@ -12,6 +12,9 @@ import org.bukkit.craftbukkit.util.LongObjectHashMap;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public final class SpawnerCreature {
 
     private LongObjectHashMap<Boolean> a = new LongObjectHashMap<Boolean>(); // CraftBukkit - HashMap -> LongObjectHashMap
@@ -149,6 +152,7 @@ public final class SpawnerCreature {
                                                             try {
                                                                 entityinsentient = (EntityInsentient) biomemeta.b.getConstructor(new Class[] { World.class}).newInstance(new Object[] { worldserver});
                                                             } catch (Exception exception) {
+                                                                NewRelic.noticeError(exception);
                                                                 exception.printStackTrace();
                                                                 return i;
                                                             }
@@ -230,6 +234,7 @@ public final class SpawnerCreature {
                             try {
                                 entityinsentient = (EntityInsentient) biomemeta.b.getConstructor(new Class[] { World.class}).newInstance(new Object[] { world});
                             } catch (Exception exception) {
+                                NewRelic.noticeError(exception);
                                 exception.printStackTrace();
                                 continue;
                             }

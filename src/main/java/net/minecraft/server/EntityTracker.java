@@ -9,6 +9,9 @@ import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class EntityTracker {
 
     private static final Logger a = LogManager.getLogger();
@@ -106,6 +109,7 @@ public class EntityTracker {
             this.trackedEntities.a(entity.getId(), entitytrackerentry);
             entitytrackerentry.scanPlayers(this.world.players);
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             CrashReport crashreport = CrashReport.a(throwable, "Adding entity to track");
             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity To Track");
 
@@ -119,6 +123,7 @@ public class EntityTracker {
             try {
                 throw new ReportedException(crashreport);
             } catch (ReportedException reportedexception) {
+                NewRelic.noticeError(reportedexception);
                 a.error("\"Silently\" catching entity tracking error.", reportedexception);
             }
         }

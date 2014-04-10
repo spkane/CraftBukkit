@@ -14,6 +14,9 @@ import net.minecraft.util.org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class LoginListener implements PacketLoginInListener {
 
     private static final AtomicInteger b = new AtomicInteger(0);
@@ -55,6 +58,7 @@ public class LoginListener implements PacketLoginInListener {
             this.networkManager.handle(new PacketLoginOutDisconnect(chatcomponenttext), new GenericFutureListener[0]);
             this.networkManager.a((IChatBaseComponent) chatcomponenttext);
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             c.error("Error whilst disconnecting player", exception);
         }
     }

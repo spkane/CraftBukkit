@@ -7,6 +7,9 @@ import net.minecraft.util.io.netty.buffer.ByteBuf;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public abstract class Packet {
 
     private static final Logger a = LogManager.getLogger();
@@ -20,6 +23,7 @@ public abstract class Packet {
 
             return oclass == null ? null : (Packet) oclass.newInstance();
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             a.error("Couldn\'t create packet " + i, exception);
             return null;
         }

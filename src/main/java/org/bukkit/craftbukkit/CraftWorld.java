@@ -49,6 +49,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.StandardMessenger;
 import org.bukkit.util.Vector;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class CraftWorld implements World {
     public static final int CUSTOM_DIMENSION_OFFSET = 10;
 
@@ -110,6 +113,7 @@ public class CraftWorld implements World {
 
             return true;
         } catch (Exception e) {
+            NewRelic.noticeError(e);
             return false;
         }
     }
@@ -662,6 +666,7 @@ public class CraftWorld implements World {
 
             world.savingDisabled = oldSave;
         } catch (ExceptionWorldConflict ex) {
+            NewRelic.noticeError(ex);
             ex.printStackTrace();
         }
     }

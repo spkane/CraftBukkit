@@ -21,6 +21,9 @@ import org.bukkit.craftbukkit.LoggerOutputStream;
 import org.bukkit.event.server.ServerCommandEvent;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class DedicatedServer extends MinecraftServer implements IMinecraftServer {
 
     private static final Logger h = LogManager.getLogger();
@@ -117,6 +120,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         try {
             this.ag().a(inetaddress, this.J());
         } catch (Throwable ioexception) { // CraftBukkit - IOException -> Throwable
+            NewRelic.noticeError(ioexception);
             h.warn("**** FAILED TO BIND TO PORT!");
             h.warn("The exception was: {}", new Object[] { ioexception.toString()});
             h.warn("Perhaps a server is already running on that port?");
@@ -153,6 +157,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                     k = l;
                 }
             } catch (NumberFormatException numberformatexception) {
+                NewRelic.noticeError(numberformatexception);
                 k = (long) s.hashCode();
             }
         }

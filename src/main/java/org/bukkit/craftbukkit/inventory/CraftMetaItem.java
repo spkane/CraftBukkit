@@ -36,6 +36,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 /**
  * Children must include the following:
  *
@@ -112,6 +115,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
                 try {
                     classConstructorBuilder.put(mapping.getValue(), mapping.getKey().getDeclaredConstructor(Map.class));
                 } catch (NoSuchMethodException e) {
+                    NewRelic.noticeError(e);
                     throw new AssertionError(e);
                 }
             }
@@ -134,10 +138,13 @@ class CraftMetaItem implements ItemMeta, Repairable {
             try {
                 return constructor.newInstance(map);
             } catch (final InstantiationException e) {
+                NewRelic.noticeError(e);
                 throw new AssertionError(e);
             } catch (final IllegalAccessException e) {
+                NewRelic.noticeError(e);
                 throw new AssertionError(e);
             } catch (final InvocationTargetException e) {
+                NewRelic.noticeError(e);
                 throw e.getCause();
             }
         }
@@ -580,6 +587,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
             }
             return clone;
         } catch (CloneNotSupportedException e) {
+            NewRelic.noticeError(e);
             throw new Error(e);
         }
     }

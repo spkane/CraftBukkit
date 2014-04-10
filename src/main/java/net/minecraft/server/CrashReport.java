@@ -16,6 +16,9 @@ import net.minecraft.util.org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class CrashReport {
 
     private static final Logger a = LogManager.getLogger();
@@ -159,6 +162,7 @@ public class CrashReport {
                 this.f = file1;
                 return true;
             } catch (Throwable throwable) {
+                NewRelic.noticeError(throwable);
                 a.error("Could not save crash report to " + file1, throwable);
                 return false;
             }
@@ -212,6 +216,7 @@ public class CrashReport {
         try {
             return astring[(int) (System.nanoTime() % (long) astring.length)];
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             return "Witty comment unavailable :(";
         }
     }

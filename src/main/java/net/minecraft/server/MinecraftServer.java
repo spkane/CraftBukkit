@@ -41,6 +41,9 @@ import org.bukkit.event.server.RemoteServerCommandEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public abstract class MinecraftServer implements ICommandListener, Runnable, IMojangStatistics {
 
     private static final Logger h = LogManager.getLogger();
@@ -131,6 +134,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
                 this.reader = new ConsoleReader(System.in, System.out);
                 this.reader.setExpandEvents(false);
             } catch (IOException ex) {
+                NewRelic.noticeError(ex);
                 h.warn((String) null, ex);
             }
         }
@@ -237,6 +241,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
                             try {
                                 com.google.common.io.Files.copy(new File(new File(s), "level.dat"), new File(new File(name), "level.dat"));
                             } catch (IOException exception) {
+                                NewRelic.noticeError(exception);
                                 h.warn("Unable to migrate world data.");
                             }
                             h.info("---- Migration of old " + worldType + " folder complete ----");
@@ -465,6 +470,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
                 this.a((CrashReport) null);
             }
         } catch (Throwable throwable) {
+            NewRelic.noticeError(throwable);
             h.error("Encountered an unexpected exception", throwable);
             CrashReport crashreport = null;
 
@@ -488,6 +494,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
                 this.stop();
                 this.isStopped = true;
             } catch (Throwable throwable1) {
+                NewRelic.noticeError(throwable1);
                 h.error("Exception stopping the server", throwable1);
             } finally {
                 // CraftBukkit start - Restore terminal to original settings
@@ -517,8 +524,10 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
 
                 serverping.setFavicon("data:image/png;base64," + bytebuf1.toString(Charsets.UTF_8));
             } catch (Exception exception) {
+                NewRelic.noticeError(exception);
                 h.error("Couldn\'t load server icon", exception);
             }
+  
         }
     }
 
@@ -628,6 +637,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
                 try {
                     worldserver.doTick();
                 } catch (Throwable throwable) {
+                    NewRelic.noticeError(throwable);
                     crashreport = CrashReport.a(throwable, "Exception ticking world");
                     worldserver.a(crashreport);
                     throw new ReportedException(crashreport);
@@ -636,6 +646,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
                 try {
                     worldserver.tickEntities();
                 } catch (Throwable throwable1) {
+                    NewRelic.noticeError(throwable1);
                     crashreport = CrashReport.a(throwable1, "Exception ticking world entities");
                     worldserver.a(crashreport);
                     throw new ReportedException(crashreport);
@@ -770,6 +781,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
             // Runtime.getRuntime().addShutdownHook(new ThreadShutdown("Server Shutdown Thread", dedicatedserver));
             // CraftBukkit end
         } catch (Exception exception) {
+            NewRelic.noticeError(exception);
             h.fatal("Failed to start the minecraft server", exception);
         }
     }
@@ -876,8 +888,10 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
         try {
             return waitable.get();
         } catch (java.util.concurrent.ExecutionException e) {
+            NewRelic.noticeError(e);
             throw new RuntimeException("Exception processing rcon command " + s, e.getCause());
         } catch (InterruptedException e) {
+            NewRelic.noticeError(e);
             Thread.currentThread().interrupt(); // Maintain interrupted state
             throw new RuntimeException("Interrupted processing rcon command " + s, e);
         }

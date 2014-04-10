@@ -11,6 +11,12 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import net.minecraft.server.MinecraftServer;
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class Main {
     public static boolean useJline = true;
     public static boolean useConsole = true;
@@ -121,6 +127,7 @@ public class Main {
         try {
             options = parser.parse(args);
         } catch (joptsimple.OptionException ex) {
+            NewRelic.noticeError(ex);
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
         }
 
@@ -128,6 +135,7 @@ public class Main {
             try {
                 parser.printHelpOn(System.out);
             } catch (IOException ex) {
+                NewRelic.noticeError(ex);
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (options.has("v")) {
@@ -158,6 +166,7 @@ public class Main {
                 System.out.println("Loading libraries, please wait...");
                 MinecraftServer.main(options);
             } catch (Throwable t) {
+                NewRelic.noticeError(t);
                 t.printStackTrace();
             }
         }
