@@ -14,7 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -22,7 +21,6 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import net.minecraft.server.BanEntry;
 import net.minecraft.server.ChunkCoordinates;
 import net.minecraft.server.CommandAchievement;
 import net.minecraft.server.CommandBan;
@@ -43,6 +41,7 @@ import net.minecraft.server.CommandKick;
 import net.minecraft.server.CommandKill;
 import net.minecraft.server.CommandList;
 import net.minecraft.server.CommandMe;
+import net.minecraft.server.CommandNetstat;
 import net.minecraft.server.CommandOp;
 import net.minecraft.server.CommandPardon;
 import net.minecraft.server.CommandPardonIP;
@@ -140,6 +139,7 @@ import org.bukkit.craftbukkit.updater.BukkitDLUpdaterService;
 import org.bukkit.craftbukkit.util.CraftIconCache;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.util.DatFileFilter;
+import org.bukkit.craftbukkit.util.MojangNameLookup;
 import org.bukkit.craftbukkit.util.Versioning;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -438,6 +438,8 @@ public final class CraftServer implements Server {
         commandMap.register("minecraft", new VanillaCommandWrapper(new CommandWeather(), "/weather <clear/rain/thunder> [duration in seconds]"));
         commandMap.register("minecraft", new VanillaCommandWrapper(new CommandWhitelist(), "/whitelist (add|remove) <player>\n/whitelist (on|off|list|reload)"));
         commandMap.register("minecraft", new VanillaCommandWrapper(new CommandXp(), "/xp <amount> [player]\n/xp <amount>L [player]"));
+        // This is what is in the lang file, I swear.
+        commandMap.register("minecraft", new VanillaCommandWrapper(new CommandNetstat(), "/list"));
     }
 
     private void loadPlugin(Plugin plugin) {
@@ -512,6 +514,17 @@ public final class CraftServer implements Server {
 
         for (Player player : getOnlinePlayers()) {
             if (player.getName().equalsIgnoreCase(lname)) {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
+    // TODO: In 1.7.6+ this should use the server's UUID->EntityPlayer map
+    public Player getPlayer(UUID id) {
+        for (Player player : getOnlinePlayers()) {
+            if (player.getUniqueId().equals(id)) {
                 return player;
             }
         }
@@ -1295,6 +1308,17 @@ public final class CraftServer implements Server {
         return result;
     }
 
+    // TODO: In 1.7.6+ this should just lookup the UUID-based player data filename
+    public OfflinePlayer getOfflinePlayer(UUID id) {
+        String name = MojangNameLookup.lookupName(id);
+        if (name == null) {
+            // This is completely wrong
+            name = "InvalidUUID";
+        }
+
+        return getOfflinePlayer(name);
+    }
+
     @SuppressWarnings("unchecked")
     public Set<String> getIPBans() {
         return new HashSet<String>(playerList.getIPBans().getEntries().keySet());
@@ -1626,11 +1650,11 @@ public final class CraftServer implements Server {
     }
 
     public void setIdleTimeout(int threshold) {
-        console.d(threshold); // Should be setIdleTimeout
+        console.setIdleTimeout(threshold);
     }
 
     public int getIdleTimeout() {
-        return console.aq(); // Should be getIdleTimeout
+        return console.getIdleTimeout();
     }
 
     @Deprecated

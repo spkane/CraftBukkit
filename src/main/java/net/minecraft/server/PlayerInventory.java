@@ -21,7 +21,7 @@ public class PlayerInventory implements IInventory {
     private ItemStack g;
     public boolean e;
 
-    // CraftBukkit start
+    // CraftBukkit start - add fields and methods
     public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
     private int maxStack = MAX_STACK;
 
@@ -102,7 +102,7 @@ public class PlayerInventory implements IInventory {
     }
     // CraftBukkit end
 
-    public int j() {
+    public int getFirstEmptySlotIndex() {
         for (int i = 0; i < this.items.length; ++i) {
             if (this.items[i] == null) {
                 return i;
@@ -156,7 +156,7 @@ public class PlayerInventory implements IInventory {
         int j;
 
         if (itemstack.getMaxStackSize() == 1) {
-            j = this.j();
+            j = this.getFirstEmptySlotIndex();
             if (j < 0) {
                 return i;
             } else {
@@ -169,7 +169,7 @@ public class PlayerInventory implements IInventory {
         } else {
             j = this.firstPartial(itemstack);
             if (j < 0) {
-                j = this.j();
+                j = this.getFirstEmptySlotIndex();
             }
 
             if (j < 0) {
@@ -238,7 +238,7 @@ public class PlayerInventory implements IInventory {
                 int i;
 
                 if (itemstack.i()) {
-                    i = this.j();
+                    i = this.getFirstEmptySlotIndex();
                     if (i >= 0) {
                         this.items[i] = ItemStack.b(itemstack);
                         this.items[i].c = 5;
@@ -498,7 +498,7 @@ public class PlayerInventory implements IInventory {
     }
 
     public boolean a(EntityHuman entityhuman) {
-        return this.player.dead ? false : entityhuman.e(this.player) <= 64.0D;
+        return this.player.dead ? false : entityhuman.f(this.player) <= 64.0D;
     }
 
     public boolean c(ItemStack itemstack) {
