@@ -43,8 +43,13 @@ public class ContainerAnvilInventory extends InventorySubcontainer { // CraftBuk
     ContainerAnvilInventory(ContainerAnvil containeranvil, String s, boolean flag, int i) {
         super(s, flag, i);
         this.a = containeranvil;
-        this.setMaxStackSize(1); // CraftBukkit
     }
+
+    // CraftBukkit start - override inherited maxStack from InventorySubcontainer
+    public int getMaxStackSize() {
+        return maxStack;
+    }
+    // CraftBukkit end
 
     public void update() {
         super.update();

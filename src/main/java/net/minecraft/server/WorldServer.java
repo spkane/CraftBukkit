@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.minecraft.util.com.google.common.collect.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,12 +22,12 @@ import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+// CraftBukkit end
 
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Trace;
 
-public class WorldServer extends World implements org.bukkit.BlockChangeDelegate {
-    // CraftBukkit end
+public class WorldServer extends World {
 
     private static final Logger a = LogManager.getLogger();
     private final MinecraftServer server;
@@ -770,14 +771,14 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
             }
 
             this.chunkProvider.saveChunks(flag, iprogressupdate);
-            // CraftBukkit - List -> Collection
-            Collection list = this.chunkProviderServer.a();
-            Iterator iterator = list.iterator();
+            // CraftBukkit - ArrayList -> Collection
+            Collection arraylist = this.chunkProviderServer.a();
+            Iterator iterator = arraylist.iterator();
 
             while (iterator.hasNext()) {
                 Chunk chunk = (Chunk) iterator.next();
 
-                if (!this.manager.a(chunk.locX, chunk.locZ)) {
+                if (chunk != null && !this.manager.a(chunk.locX, chunk.locZ)) {
                     this.chunkProviderServer.queueUnload(chunk.locX, chunk.locZ);
                 }
             }
@@ -792,7 +793,7 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
 
     protected void a() throws ExceptionWorldConflict { // CraftBukkit - added throws
         this.G();
-        this.dataManager.saveWorldData(this.worldData, this.server.getPlayerList().q());
+        this.dataManager.saveWorldData(this.worldData, this.server.getPlayerList().t());
         // CraftBukkit start - save worldMaps once, rather than once per shared world
         if (!(this instanceof SecondaryWorldServer)) {
             this.worldMaps.a();
@@ -966,7 +967,7 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
     }
 
     protected int p() {
-        return this.server.getPlayerList().o();
+        return this.server.getPlayerList().s();
     }
 
     public MinecraftServer getMinecraftServer() {
@@ -1002,23 +1003,7 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
         }
     }
 
-    // CraftBukkit start - Compatibility methods for BlockChangeDelegate
-    public boolean setRawTypeId(int x, int y, int z, int typeId) {
-        return this.setTypeAndData(x, y, z, Block.e(typeId), 0, 4);
-    }
-
-    public boolean setRawTypeIdAndData(int x, int y, int z, int typeId, int data) {
-        return this.setTypeAndData(x, y, z, Block.e(typeId), data, 4);
-    }
-
-    public boolean setTypeId(int x, int y, int z, int typeId) {
-        return this.setTypeAndData(x, y, z, Block.e(typeId), 0, 3);
-    }
-
-    public boolean setTypeIdAndData(int x, int y, int z, int typeId, int data) {
-        return this.setTypeAndData(x, y, z, Block.e(typeId), data, 3);
-    }
-
+    // CraftBukkit start - Helper method
     public int getTypeId(int x, int y, int z) {
         return Block.b(getType(x, y, z));
     }

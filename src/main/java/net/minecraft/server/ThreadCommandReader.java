@@ -43,7 +43,7 @@ class ThreadCommandReader extends Thread {
             }
         } catch (IOException ioexception) {
             NewRelic.noticeError(ioexception);
-            DedicatedServer.aA().error("Exception handling console input", ioexception);
+            DedicatedServer.aF().error("Exception handling console input", ioexception);
         }
     }
 }

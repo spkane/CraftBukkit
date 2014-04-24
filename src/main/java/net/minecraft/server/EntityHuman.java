@@ -78,7 +78,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
         ChunkCoordinates chunkcoordinates = world.getSpawn();
 
         this.setPositionRotation((double) chunkcoordinates.x + 0.5D, (double) (chunkcoordinates.y + 1), (double) chunkcoordinates.z + 0.5D, 0.0F, 0.0F);
-        this.az = 180.0F;
+        this.aZ = 180.0F;
         this.maxFireTicks = 20;
     }
 
@@ -190,7 +190,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
         }
 
         if (d0 < -d3) {
-            this.bu = this.by = this.locX;
+            this.bu = this.bx = this.locX;
         }
 
         if (d2 < -d3) {
@@ -198,7 +198,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
         }
 
         if (d1 < -d3) {
-            this.bv = this.bz = this.locY;
+            this.bv = this.by = this.locY;
         }
 
         this.bx += d0 * 0.25D;
@@ -911,8 +911,15 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
                     int j = EnchantmentManager.getFireAspectEnchantmentLevel(this);
 
                     if (entity instanceof EntityLiving && j > 0 && !entity.isBurning()) {
-                        flag1 = true;
-                        entity.setOnFire(1);
+                        // CraftBukkit start - Call a combust event when somebody hits with a fire enchanted item
+                        EntityCombustByEntityEvent combustEvent = new EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), 1);
+                        org.bukkit.Bukkit.getPluginManager().callEvent(combustEvent);
+
+                        if (!combustEvent.isCancelled()) {
+                            flag1 = true;
+                            entity.setOnFire(combustEvent.getDuration());
+                        }
+                        // CraftBukkit end
                     }
 
                     boolean flag2 = entity.damageEntity(DamageSource.playerAttack(this), f);
@@ -1563,7 +1570,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
     }
 
     public static UUID a(GameProfile gameprofile) {
-        UUID uuid = UtilUUID.b(gameprofile.getId());
+        UUID uuid = gameprofile.getId();
 
         if (uuid == null) {
             uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName()).getBytes(Charsets.UTF_8));

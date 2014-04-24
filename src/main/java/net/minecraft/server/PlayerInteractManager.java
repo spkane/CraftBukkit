@@ -8,6 +8,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 // CraftBukkit end
 
+import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Trace;
+
 public class PlayerInteractManager {
 
     public World world;
@@ -224,9 +227,12 @@ public class PlayerInteractManager {
         return flag;
     }
 
+    @Trace (dispatcher=true)
     public boolean breakBlock(int i, int j, int k) {
         // CraftBukkit start - fire BlockBreakEvent
         BlockBreakEvent event = null;
+
+        NewRelic.setTransactionName(null, "BreakBlock");
 
         if (this.player instanceof EntityPlayer) {
             org.bukkit.block.Block block = this.world.getWorld().getBlockAt(i, j, k);
@@ -317,6 +323,11 @@ public class PlayerInteractManager {
                 block.dropExperience(this.world, i, j, k, event.getExpToDrop());
             }
             // CraftBukkit end
+
+            NewRelic.addCustomParameter("playerName", this.player.getName());
+            String blockname = block.getType().toString();
+            blockname = blockname.toLowerCase().replace("_"," ");
+            NewRelic.addCustomParameter("blockType", blockname);
 
             return flag;
         }
