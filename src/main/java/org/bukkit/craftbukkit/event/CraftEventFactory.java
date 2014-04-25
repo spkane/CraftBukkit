@@ -105,7 +105,6 @@ public class CraftEventFactory {
     /**
      * Block place methods
      */
-    @Trace (dispatcher=true)
     public static BlockMultiPlaceEvent callBlockMultiPlaceEvent(World world, EntityHuman who, List<BlockState> blockStates, int clickedX, int clickedY, int clickedZ) {
         CraftWorld craftWorld = world.getWorld();
         CraftServer craftServer = world.getServer();
@@ -127,6 +126,7 @@ public class CraftEventFactory {
         return event;
     }
 
+    @Trace (dispatcher=true)
     public static BlockPlaceEvent callBlockPlaceEvent(World world, EntityHuman who, BlockState replacedBlockState, int clickedX, int clickedY, int clickedZ) {
         NewRelic.setTransactionName(null, "callBlockPlaceEvent");
 
@@ -250,7 +250,6 @@ public class CraftEventFactory {
     /**
      * BlockDamageEvent
      */
-    @Trace (dispatcher=true)
     public static BlockDamageEvent callBlockDamageEvent(EntityHuman who, int x, int y, int z, ItemStack itemstack, boolean instaBreak) {
         NewRelic.setTransactionName(null, "callBlockDamageEvent");
 
@@ -261,11 +260,6 @@ public class CraftEventFactory {
         CraftServer craftServer = (CraftServer) player.getServer();
 
         Block blockClicked = craftWorld.getBlockAt(x, y, z);
-
-        NewRelic.addCustomParameter("playerName", who.getName());
-        String blockname = blockClicked.getType().toString();
-        blockname = blockname.toLowerCase().replace("_"," ");
-        NewRelic.addCustomParameter("blockType", blockname);
 
         BlockDamageEvent event = new BlockDamageEvent(player, blockClicked, itemInHand, instaBreak);
         craftServer.getPluginManager().callEvent(event);
@@ -368,10 +362,18 @@ public class CraftEventFactory {
         }
     }
 
+    @Trace (dispatcher=true)
     public static EntityDeathEvent callEntityDeathEvent(EntityLiving victim) {
+
+        CraftLivingEntity entity = (CraftLivingEntity) victim.getBukkitEntity();
+        String entityname = entity.getType().toString();
+        entityname = entityname.toLowerCase().replace("_"," ");
+        NewRelic.addCustomParameter("entityType", entityname);
+
         return callEntityDeathEvent(victim, new ArrayList<org.bukkit.inventory.ItemStack>(0));
     }
 
+    @Trace (dispatcher=true)
     public static EntityDeathEvent callEntityDeathEvent(EntityLiving victim, List<org.bukkit.inventory.ItemStack> drops) {
         CraftLivingEntity entity = (CraftLivingEntity) victim.getBukkitEntity();
         EntityDeathEvent event = new EntityDeathEvent(entity, drops, victim.getExpReward());
@@ -385,6 +387,10 @@ public class CraftEventFactory {
 
             world.dropItemNaturally(entity.getLocation(), stack);
         }
+
+        String entityname = entity.getType().toString();
+        entityname = entityname.toLowerCase().replace("_"," ");
+        NewRelic.addCustomParameter("entityType", entityname);
 
         return event;
     }

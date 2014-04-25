@@ -325,7 +325,7 @@ public class PlayerInteractManager {
             // CraftBukkit end
 
             NewRelic.addCustomParameter("playerName", this.player.getName());
-            String blockname = block.getType().toString();
+            String blockname = block.getName();
             blockname = blockname.toLowerCase().replace("_"," ");
             NewRelic.addCustomParameter("blockType", blockname);
 
